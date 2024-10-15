@@ -26,9 +26,9 @@ static uint32_t totp_truncate(uint8_t *hmac_result){
     uint8_t offset = hmac_result[SHA1_LENGTH - 1] & 0xf;        // get the last 4 bits of the last byte
     uint32_t truncated = 
         ((hmac_result[offset] & 0x7f) << 24) |                  //0x7f makes sure num is positive by ANDing the most significant bit
-        (hmac_result[offset + 1] << 16)      |
-        (hmac_result[offset + 2] << 8)       |                  //rfc 6238's example implementation specifies ANDing with 0xff but this isn't necessary here
-        (hmac_result[offset + 3]);                              //as we are using the stdint unsigned 8 bit int type, and Java bytes are signed (why?)
+        (hmac_result[offset + 1] << 16)      |                  //even though uint8_t is unsigned, the spec requires 31 bits since other platforms may not support 8 bit unsigned
+        (hmac_result[offset + 2] << 8)       |                  //rfc 6238's example implementation specifies ANDing the rest of the bytes with 0xff but this isn't necessary here
+        (hmac_result[offset + 3]);                              //as we are using the stdint types which cannot be any size other than the stated name
     return truncated;
 }
 
